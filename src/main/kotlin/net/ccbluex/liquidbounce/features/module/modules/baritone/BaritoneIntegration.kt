@@ -29,8 +29,10 @@ import net.ccbluex.liquidbounce.features.module.ClientModule
 import net.ccbluex.liquidbounce.features.module.ModuleCategories
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.utils.client.inGame
+import net.ccbluex.liquidbounce.utils.client.mc
 import net.ccbluex.liquidbounce.utils.client.notification
 import net.fabricmc.loader.api.FabricLoader
+import net.minecraft.client.player.LocalPlayer
 
 /**
  * Optional integration with the Baritone pathfinding mod.
@@ -104,7 +106,9 @@ abstract class BaritoneJobModule(name: String) : ClientModule(
         if (!inGame) {
             return
         }
-        awaitingRespawn = false
+        resumeState = ResumeState.NONE
+        resumeAttempts = 0
+        trackedPlayer = player
 
         // Baritone runs one job at a time, so a new job replaces the one before it
         for (other in BaritoneIntegration.jobModules) {
@@ -133,39 +137,126 @@ abstract class BaritoneJobModule(name: String) : ClientModule(
     }
 
     /**
-     * Set when the player died while the job ran and [ModuleBaritoneSettings.resumeAfterDeath] is on:
-     * the job is paused and started again once the player has respawned.
+     * Where a job stands after the player died, when [ModuleBaritoneSettings.resumeAfterDeath] is on.
      */
-    private var awaitingRespawn = false
+    private enum class ResumeState {
+        /** Running normally. */
+        NONE,
 
-    @Suppress("unused")
-    private val deathHandler = handler<DeathEvent> {
-        if (ModuleBaritoneSettings.resumeAfterDeath) {
-            awaitingRespawn = true
-            // Baritone cannot walk while the player is dead, so the job is paused cleanly
-            baritone.pathingBehavior.cancelEverything()
-        } else {
+        /** The player is dead; the job is paused. */
+        WAITING_FOR_RESPAWN,
+
+        /** Respawned; waiting for the world around the player to load before starting again. */
+        SETTLING,
+
+        /** Started again; Baritone giving up soon after is retried. */
+        RESUMED,
+    }
+
+    private var resumeState = ResumeState.NONE
+    private var settleTicks = 0
+    private var resumeGraceTicks = 0
+    private var resumeAttempts = 0
+
+    /**
+     * The player entity the job runs for. Every respawn replaces it, which also catches a death
+     * whose [DeathEvent] was missed.
+     */
+    private var trackedPlayer: LocalPlayer? = null
+
+    /**
+     * Whether the job has reached what it was started for, to tell a finished job apart from
+     * Baritone giving up. Jobs without a fixed target never count as reached.
+     */
+    protected open fun isGoalReached(): Boolean = false
+
+    private fun onPlayerDied() {
+        if (resumeState == ResumeState.WAITING_FOR_RESPAWN) {
+            return
+        }
+
+        if (!ModuleBaritoneSettings.resumeAfterDeath) {
             notification(name, "Stopped because you died", NotificationEvent.Severity.INFO)
             enabled = false
+            return
         }
+
+        resumeState = ResumeState.WAITING_FOR_RESPAWN
+        resumeAttempts = 0
+        logger.info("Player died, pausing the job until respawn")
+        // Baritone cannot walk while the player is dead, so the job is paused cleanly
+        baritone.pathingBehavior.cancelEverything()
     }
 
     @Suppress("unused")
+    private val deathHandler = handler<DeathEvent> {
+        // The health packet first reaches this event on the network thread and is then handled again
+        // on the game thread. Baritone may only be touched from the game thread.
+        if (mc.isSameThread) {
+            onPlayerDied()
+        }
+    }
+
+    /**
+     * Starts the job again after a respawn. Returns false when it cannot start at all.
+     */
+    private fun resume(): Boolean {
+        if (!start()) {
+            enabled = false
+            return false
+        }
+
+        resumeAttempts++
+        resumeState = ResumeState.RESUMED
+        logger.info("Resumed after respawn (attempt $resumeAttempts)")
+        resumeGraceTicks = RESUME_GRACE_TICKS
+        startupTicks = STARTUP_TICKS
+        if (resumeAttempts == 1) {
+            notification(name, "Resumed after respawn", NotificationEvent.Severity.INFO)
+        }
+        return true
+    }
+
+    /** True once the chunk the player stands in has been loaded after a respawn. */
+    private fun isAreaLoaded() = world.hasChunk(player.blockX shr 4, player.blockZ shr 4)
+
+    @Suppress("unused", "CyclomaticComplexMethod", "ReturnCount")
     private val finishHandler = tickHandler {
+        val current = player
+        if (current !== trackedPlayer) {
+            // A new player entity means the player respawned, possibly without a death event
+            trackedPlayer = current
+            if (resumeState == ResumeState.NONE || resumeState == ResumeState.RESUMED) {
+                onPlayerDied()
+                if (!enabled) return@tickHandler
+            }
+        }
+
         // Baritone's job goes idle while the player is dead, which is not the job being finished
-        if (player.isDeadOrDying) {
+        if (current.isDeadOrDying) {
+            onPlayerDied()
             return@tickHandler
         }
 
-        if (awaitingRespawn) {
-            awaitingRespawn = false
-            if (start()) {
-                startupTicks = STARTUP_TICKS
-                notification(name, "Resumed after respawn", NotificationEvent.Severity.INFO)
-            } else {
-                enabled = false
+        when (resumeState) {
+            ResumeState.WAITING_FOR_RESPAWN -> {
+                resumeState = ResumeState.SETTLING
+                settleTicks = SETTLE_TICKS
+                return@tickHandler
             }
-            return@tickHandler
+
+            ResumeState.SETTLING -> {
+                // Starting before the respawn area is loaded makes Baritone give up right away
+                if (!isAreaLoaded() || --settleTicks > 0) return@tickHandler
+                resume()
+                return@tickHandler
+            }
+
+            ResumeState.RESUMED -> if (--resumeGraceTicks <= 0) {
+                resumeState = ResumeState.NONE
+            }
+
+            ResumeState.NONE -> {}
         }
 
         if (startupTicks > 0) {
@@ -174,6 +265,21 @@ abstract class BaritoneJobModule(name: String) : ClientModule(
         }
 
         if (!process.isActive) {
+            // Giving up shortly after a respawn is usually the area still loading: try again
+            if (resumeState == ResumeState.RESUMED && !isGoalReached()) {
+                if (resumeAttempts < MAX_RESUME_ATTEMPTS) {
+                    logger.info("Baritone gave up right after resuming, retrying")
+                    resumeState = ResumeState.SETTLING
+                    settleTicks = RETRY_DELAY_TICKS
+                    return@tickHandler
+                }
+
+                logger.info("Could not resume after $resumeAttempts attempts")
+                notification(name, "Could not resume after death", NotificationEvent.Severity.ERROR)
+                enabled = false
+                return@tickHandler
+            }
+
             notification(name, "Finished", NotificationEvent.Severity.SUCCESS)
             enabled = false
             onFinished()
@@ -187,6 +293,16 @@ abstract class BaritoneJobModule(name: String) : ClientModule(
     protected open fun onFinished() {}
 
     private companion object {
+        /** Ticks Baritone gets to pick up a job before it is checked. */
         const val STARTUP_TICKS = 20
+
+        /** Ticks to wait after respawning, once the player's chunk is loaded, before resuming. */
+        const val SETTLE_TICKS = 40
+
+        /** How long after resuming Baritone giving up is retried instead of ending the job. */
+        const val RESUME_GRACE_TICKS = 200
+
+        const val RETRY_DELAY_TICKS = 40
+        const val MAX_RESUME_ATTEMPTS = 3
     }
 }

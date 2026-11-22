@@ -64,13 +64,14 @@ object ModuleBaritoneGoto : BaritoneJobModule("Goto") {
         return true
     }
 
+    override fun isGoalReached() = goal?.isInGoal(player.blockPosition()) == true
+
     override fun onFinished() {
         if (!disconnectOnArrival) {
             return
         }
 
-        val goal = goal ?: return
-        if (!goal.isInGoal(player.blockPosition())) {
+        if (!isGoalReached()) {
             notification(name, "Did not reach the target, staying connected", NotificationEvent.Severity.INFO)
             return
         }
