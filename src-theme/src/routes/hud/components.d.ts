@@ -29,6 +29,13 @@ interface HudArrayListSettings {
     order: "Ascending" | "Descending";
 }
 
+interface HudModuleListSettings {
+    showTags: boolean;
+    showIcons: boolean;
+    showHeader: boolean;
+    sort: "Length" | "Name" | "Category";
+}
+
 interface HudInventoryStatisticsSettings {
     items: string[];
     showEmpty: boolean;

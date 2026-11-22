@@ -18,6 +18,8 @@
  */
 package net.ccbluex.liquidbounce.features.module
 
+import net.ccbluex.liquidbounce.features.module.modules.baritone.BaritoneIntegration
+
 import it.unimi.dsi.fastutil.objects.ObjectRBTreeSet
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap
 import net.ccbluex.liquidbounce.config.ConfigSystem
@@ -708,7 +710,7 @@ object ModuleManager : EventListener, Collection<ClientModule> by modules {
             ModuleNoInterpolation,
         )
 
-        builtin.forEach { module ->
+        (builtin.asList() + BaritoneIntegration.modules()).forEach { module ->
             addModule(module)
             module.walkKeyPath()
             module.verifyFallbackDescription()

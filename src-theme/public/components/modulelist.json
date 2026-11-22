@@ -1,0 +1,35 @@
+{
+  "name": "ModuleList",
+  "description": "Shows enabled modules in a panel styled like the ClickGUI.",
+  "enabled": true,
+  "singleton": true,
+  "alignment": {
+    "horizontalAlignment": "Right",
+    "horizontalOffset": 10,
+    "verticalAlignment": "Top",
+    "verticalOffset": 10
+  },
+  "values": [
+    {
+      "type": "BOOLEAN",
+      "name": "ShowTags",
+      "value": true
+    },
+    {
+      "type": "BOOLEAN",
+      "name": "ShowIcons",
+      "value": true
+    },
+    {
+      "type": "BOOLEAN",
+      "name": "ShowHeader",
+      "value": true
+    },
+    {
+      "type": "CHOOSE",
+      "name": "Sort",
+      "value": "Length",
+      "choices": ["Length", "Name", "Category"]
+    }
+  ]
+}

@@ -216,6 +216,10 @@ dependencies {
     compileOnly(libs.modmenu)
     localRuntime(libs.modmenu)
 
+    // Baritone (optional): built from source into libs/, the Baritone tab only appears when it is installed
+    compileOnly(files("libs/baritone-fabric-1.20.0.jar"))
+    localRuntime(files("libs/baritone-fabric-1.20.0.jar"))
+
     // Recommended mods (on IDE)
     compileOnly(libs.sodium)
     compileOnly(libs.lithium)

@@ -55,11 +55,14 @@
   --clickgui-focus-ring-color: color-mix(in srgb, var(--accent-color) 55%, transparent);
 
   /* ClickGUI window layout */
-  --clickgui-window-background-color: color-mix(in srgb, #0b0e1a 82%, transparent);
-  --clickgui-sidebar-background-color: color-mix(in srgb, #070912 55%, transparent);
-  --clickgui-pane-background-color: #0d111e;
-  --clickgui-card-background-color: color-mix(in srgb, white 3%, transparent);
-  --clickgui-card-hover-background-color: color-mix(in srgb, white 6%, transparent);
+  --clickgui-window-accent-color: #8b7bff;
+  --clickgui-window-background-color: color-mix(in srgb, #0a0c20 86%, transparent);
+  --clickgui-window-border-color: color-mix(in srgb, #8b7bff 18%, transparent);
+  --clickgui-sidebar-background-color: color-mix(in srgb, #070818 62%, transparent);
+  --clickgui-pane-background-color: #0d0f27;
+  --clickgui-card-background-color: color-mix(in srgb, #171b44 52%, transparent);
+  --clickgui-card-border-color: color-mix(in srgb, #8b7bff 11%, transparent);
+  --clickgui-card-hover-background-color: color-mix(in srgb, #1e2358 66%, transparent);
   --clickgui-card-enabled-background-color: color-mix(in srgb, var(--accent-color) 10%, transparent);
   --clickgui-card-enabled-border-color: color-mix(in srgb, var(--accent-color) 45%, transparent);
 
@@ -346,4 +349,40 @@
   --confetti-color-6: #8ad9ff;
   --confetti-color-7: #ff8fab;
   --confetti-shadow-color: rgba(255, 255, 255, 0.12);
+}
+
+/*
+ * The ClickGUI screen uses its own violet accent. Tokens derived from the accent are
+ * resolved where they are declared, so they are declared again here to pick it up.
+ */
+.tabbed-clickgui {
+  --accent-color: var(--clickgui-window-accent-color);
+  --accent-hover-color: color-mix(in srgb, var(--accent-color) 82%, black);
+  --accent-subtle-background-color: color-mix(in srgb, var(--accent-color) 14%, transparent);
+
+  --clickgui-text-dimmed-color: #a3a8c7;
+  --clickgui-border-color: color-mix(in srgb, #8b7bff 10%, transparent);
+  --clickgui-border-strong-color: color-mix(in srgb, #a99dff 20%, transparent);
+  --clickgui-inset-color: color-mix(in srgb, #05061a 45%, transparent);
+  --clickgui-tabs-background-color: var(--clickgui-window-background-color);
+
+  --clickgui-module-enabled-background-color: color-mix(in srgb, var(--accent-color) 16%, transparent);
+  --clickgui-module-enabled-indicator-color: var(--accent-color);
+  --clickgui-module-highlight-color: var(--accent-color);
+  --clickgui-module-settings-border-color: color-mix(in srgb, var(--accent-color) 45%, transparent);
+  --clickgui-focus-ring-color: color-mix(in srgb, var(--accent-color) 55%, transparent);
+  --clickgui-card-enabled-background-color: color-mix(in srgb, var(--accent-color) 12%, transparent);
+  --clickgui-card-enabled-border-color: color-mix(in srgb, var(--accent-color) 50%, transparent);
+  --clickgui-search-enabled-color: var(--accent-color);
+  --clickgui-tab-active-background-color: var(--accent-color);
+  --clickgui-button-background-color: var(--accent-color);
+  --clickgui-button-hover-background-color: var(--accent-hover-color);
+  --clickgui-dropdown-trigger-background-color: var(--clickgui-button-background-color);
+  --clickgui-dropdown-option-selected-color: var(--accent-color);
+  --clickgui-selection-chip-selected-background-color: var(--accent-subtle-background-color);
+  --clickgui-selection-chip-selected-color: var(--accent-color);
+  --clickgui-switch-track-active-color: var(--accent-color);
+  --clickgui-slider-handle-color: var(--clickgui-button-background-color);
+  --clickgui-slider-fill-color: var(--clickgui-button-background-color);
+  --clickgui-curve-accent-color: var(--accent-color);
 }

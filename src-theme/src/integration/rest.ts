@@ -904,3 +904,55 @@ export function itemTextureUrl(identifier: string) {
 export function effectTextureUrl(effectId: string) {
     return `${API_BASE}/client/resource/effectTexture?id=${effectId}`
 }
+
+export interface LocalConfig {
+    name: string;
+    lastModified: number;
+    size: number;
+    /** False for configs saved before the switcher stored which modules are on */
+    complete: boolean;
+}
+
+export interface LocalConfigList {
+    active: string;
+    configs: LocalConfig[];
+}
+
+export async function getLocalConfigs(): Promise<LocalConfigList> {
+    const response = await fetch(`${API_BASE}/client/localConfigs`);
+    return await response.json();
+}
+
+export async function loadLocalConfig(name: string): Promise<void> {
+    const response = await fetch(`${API_BASE}/client/localConfigs/load`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({name})
+    });
+    if (!response.ok) {
+        throw new Error(`Could not load config "${name}"`);
+    }
+}
+
+/**
+ * Saves the current settings as a local config. Resolves to "exists" when a config
+ * with that name is already there and [overwrite] is false.
+ */
+export async function saveLocalConfig(name: string, overwrite: boolean): Promise<"saved" | "exists"> {
+    const response = await fetch(`${API_BASE}/client/localConfigs/save`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({name, overwrite})
+    });
+    if (response.status === 409) {
+        return "exists";
+    }
+    if (!response.ok) {
+        throw new Error(`Could not save config "${name}"`);
+    }
+    return "saved";
+}
+
+export async function browseLocalConfigs(): Promise<void> {
+    await fetch(`${API_BASE}/client/localConfigs/browse`, {method: "POST"});
+}

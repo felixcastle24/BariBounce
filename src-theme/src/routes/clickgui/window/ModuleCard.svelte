@@ -60,14 +60,18 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    min-height: 96px;
-    padding: var(--clickgui-space-3) var(--clickgui-space-3) var(--clickgui-space-2);
-    border-radius: var(--clickgui-radius-md);
-    background-color: var(--clickgui-card-background-color);
-    border: 1px solid var(--clickgui-border-color);
+    min-height: 92px;
+    padding: 12px 12px 8px 14px;
+    border-radius: 12px;
+    background: linear-gradient(180deg,
+            color-mix(in srgb, white 2.5%, transparent),
+            transparent 60%),
+    var(--clickgui-card-background-color);
+    border: 1px solid var(--clickgui-card-border-color);
     cursor: pointer;
     transition: background-color var(--clickgui-duration-fast) var(--clickgui-ease),
     border-color var(--clickgui-duration-fast) var(--clickgui-ease),
+    box-shadow var(--clickgui-duration-base) var(--clickgui-ease),
     transform var(--clickgui-duration-fast) var(--clickgui-ease);
 
     &:hover {
@@ -82,6 +86,7 @@
     &.enabled {
       border-color: var(--clickgui-card-enabled-border-color);
       background-color: var(--clickgui-card-enabled-background-color);
+      box-shadow: 0 0 18px color-mix(in srgb, var(--accent-color) 14%, transparent);
     }
 
     &.selected {
@@ -114,8 +119,8 @@
   }
 
   .name {
-    font-size: var(--clickgui-font-size-md);
-    font-weight: 600;
+    font-size: 14px;
+    font-weight: 700;
     color: var(--clickgui-text-color);
     white-space: nowrap;
     overflow: hidden;

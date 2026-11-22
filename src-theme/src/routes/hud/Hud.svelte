@@ -1,5 +1,6 @@
 <script lang="ts">
     import ArrayList from "./elements/ArrayList.svelte";
+    import ModuleList from "./elements/ModuleList.svelte";
     import TargetHud from "./elements/targethud/TargetHud.svelte";
     import Watermark from "./elements/Watermark.svelte";
     import Notifications from "./elements/notifications/Notifications.svelte";
@@ -93,6 +94,8 @@
                     <Watermark/>
                 {:else if c.name === "ArrayList"}
                     <ArrayList settings={c.settings}/>
+                {:else if c.name === "ModuleList"}
+                    <ModuleList settings={c.settings}/>
                 {:else if c.name === "TabGui"}
                     <TabGui/>
                 {:else if c.name === "Notifications"}
