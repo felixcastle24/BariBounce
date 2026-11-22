@@ -2,16 +2,14 @@
   "schemaVersion": 1,
   "id": "liquidbounce",
   "version": "${version}",
-  "name": "LiquidBounce",
-  "description": "A free mixin-based injection hacked-client for Minecraft using the Fabric modding toolchain.",
+  "name": "Baribounce",
+  "description": "An unofficial fork of LiquidBounce with a redesigned ClickGUI, config switcher and Baritone integration. Not affiliated with or endorsed by CCBlueX.",
   "authors": [
     "CCBlueX"
   ],
   "contributors": $contributors,
   "contact": {
-    "homepage": "https://liquidbounce.net/",
-    "sources": "https://github.com/CCBlueX/LiquidBounce/",
-    "issues": "https://github.com/CCBlueX/LiquidBounce/issues"
+    "sources": "https://github.com/CCBlueX/LiquidBounce/"
   },
   "license": "GNU General Public License v3.0",
   "icon": "resources/liquidbounce/icon_64x64.png",
@@ -22,11 +20,6 @@
   "custom": {
     "liquidbounce": {
       "edition": "${edition}"
-    },
-    "modmenu": {
-      "links": {
-        "liquidbounce.generic.forum": "https://forums.ccbluex.net/"
-      }
     }
   },
   "mixins": [

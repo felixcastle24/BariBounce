@@ -152,8 +152,16 @@ private fun Route.getLocalConfigs() = get {
         configFiles()
             .sortedByDescending { it.lastModified() }
             .map { file ->
-                val complete = runCatching { file.readText().contains("\"$ENABLED_MODULES_KEY\"") }.getOrDefault(false)
-                LocalConfigData(file.name.dropLast(CONFIG_EXTENSION.length), file.lastModified(), file.length(), complete)
+                val complete = runCatching {
+                    file.readText().contains("\"$ENABLED_MODULES_KEY\"")
+                }.getOrDefault(false)
+
+                LocalConfigData(
+                    name = file.name.dropLast(CONFIG_EXTENSION.length),
+                    lastModified = file.lastModified(),
+                    size = file.length(),
+                    complete = complete,
+                )
             }
     }
     call.respond(LocalConfigListData(ConfigTracker.localName, configs))
