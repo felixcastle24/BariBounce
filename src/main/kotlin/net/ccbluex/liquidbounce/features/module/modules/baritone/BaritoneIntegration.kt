@@ -21,7 +21,9 @@ package net.ccbluex.liquidbounce.features.module.modules.baritone
 import baritone.api.BaritoneAPI
 import baritone.api.IBaritone
 import baritone.api.process.IBaritoneProcess
+import net.ccbluex.liquidbounce.event.events.DeathEvent
 import net.ccbluex.liquidbounce.event.events.NotificationEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.event.tickHandler
 import net.ccbluex.liquidbounce.features.module.ClientModule
 import net.ccbluex.liquidbounce.features.module.ModuleCategories
@@ -102,6 +104,7 @@ abstract class BaritoneJobModule(name: String) : ClientModule(
         if (!inGame) {
             return
         }
+        awaitingRespawn = false
 
         // Baritone runs one job at a time, so a new job replaces the one before it
         for (other in BaritoneIntegration.jobModules) {
@@ -129,8 +132,42 @@ abstract class BaritoneJobModule(name: String) : ClientModule(
         notification(name, message, NotificationEvent.Severity.ERROR)
     }
 
+    /**
+     * Set when the player died while the job ran and [ModuleBaritoneSettings.resumeAfterDeath] is on:
+     * the job is paused and started again once the player has respawned.
+     */
+    private var awaitingRespawn = false
+
+    @Suppress("unused")
+    private val deathHandler = handler<DeathEvent> {
+        if (ModuleBaritoneSettings.resumeAfterDeath) {
+            awaitingRespawn = true
+            // Baritone cannot walk while the player is dead, so the job is paused cleanly
+            baritone.pathingBehavior.cancelEverything()
+        } else {
+            notification(name, "Stopped because you died", NotificationEvent.Severity.INFO)
+            enabled = false
+        }
+    }
+
     @Suppress("unused")
     private val finishHandler = tickHandler {
+        // Baritone's job goes idle while the player is dead, which is not the job being finished
+        if (player.isDeadOrDying) {
+            return@tickHandler
+        }
+
+        if (awaitingRespawn) {
+            awaitingRespawn = false
+            if (start()) {
+                startupTicks = STARTUP_TICKS
+                notification(name, "Resumed after respawn", NotificationEvent.Severity.INFO)
+            } else {
+                enabled = false
+            }
+            return@tickHandler
+        }
+
         if (startupTicks > 0) {
             startupTicks--
             return@tickHandler

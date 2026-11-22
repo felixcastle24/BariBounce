@@ -175,4 +175,10 @@ object ModuleBaritoneSettings : ClientModule(
         boolean("RenderPath", true).onChange { baritoneSettings.renderPath.value = it; it }
         boolean("ChatPrefix", true).onChange { baritoneSettings.prefixControl.value = it; it }
     }
+
+    /**
+     * Whether a running Baritone job (Goto, Mine, ...) starts again after the player died and
+     * respawned, instead of stopping.
+     */
+    val resumeAfterDeath by boolean("ResumeAfterDeath", true)
 }
