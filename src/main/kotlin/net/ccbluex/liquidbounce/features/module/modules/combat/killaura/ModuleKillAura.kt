@@ -429,7 +429,7 @@ object ModuleKillAura : ClientModule("KillAura", ModuleCategories.COMBAT) {
             val rotationThroughWalls = raytraceBox(
                 eyes = eyes,
                 box = point.box,
-                // Since [range] is squared, we need to square root
+                // Aim through walls: allow the full [range] for the through-walls check as well
                 range = range.toDouble(),
                 wallsRange = range.toDouble(),
                 rotationPreference = rotationPreference

@@ -77,6 +77,10 @@ private fun ArchiveInputStream<*>.extractTo(folder: Path) = use { ais ->
     val destDir = folder.createDirectories().toRealPath()
 
     for (entry in ais) {
+        // Best effort only: ZipArchiveInputStream reads local file headers, which do not carry the
+        // Unix mode bits (those live in the central directory), so isUnixSymlink is always false here.
+        // This is still safe because every entry is written below as a regular file with CREATE_NEW and
+        // NOFOLLOW_LINKS, so a symlink entry can only ever become a plain file containing its target path.
         if (entry is ZipArchiveEntry && entry.isUnixSymlink) {
             throw SecurityException("Refusing symlink entry: ${entry.name}")
         }
