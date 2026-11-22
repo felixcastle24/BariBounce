@@ -17,9 +17,17 @@ Baribounce is based on LiquidBounce 0.43.0 for Minecraft 26.3 (Fabric) and adds:
 
 ## Installing
 
-1. Install [Fabric Loader](https://fabricmc.net/) for Minecraft 26.3.
-2. Download `baribounce-<version>.jar` from the releases and put it into your `mods` folder.
-3. For the Baritone tab, also put `baritone-fabric-1.20.0.jar` from the same release into `mods`.
+1. Install [Fabric Loader](https://fabricmc.net/) 0.18.4 or newer for Minecraft 26.3.
+2. Put these into your `mods` folder:
+
+   | Mod | Required? | Where to get it |
+   |---|---|---|
+   | `baribounce-<version>.jar` | Yes | [Releases](../../releases) |
+   | **Fabric Language Kotlin** 1.14.1+kotlin.2.4.20 or newer | **Yes**, Baribounce is written in Kotlin and does not start without it | [Modrinth](https://modrinth.com/mod/fabric-language-kotlin) |
+   | Fabric API 0.165.0+26.3 or newer | Recommended | [Modrinth](https://modrinth.com/mod/fabric-api) |
+   | `baritone-fabric-1.20.0.jar` | Only for the Baritone tab | [Releases](../../releases) |
+
+   Pick the Fabric Language Kotlin and Fabric API files made for Minecraft 26.3.
 
 Using a hacked client on multiplayer servers usually breaks their rules and can get you banned.
 
