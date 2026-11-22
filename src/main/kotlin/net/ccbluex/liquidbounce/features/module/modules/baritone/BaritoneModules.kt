@@ -21,12 +21,17 @@
 package net.ccbluex.liquidbounce.features.module.modules.baritone
 
 import baritone.api.BaritoneAPI
+import baritone.api.pathing.goals.Goal
 import baritone.api.pathing.goals.GoalBlock
 import baritone.api.pathing.goals.GoalXZ
 import baritone.api.process.IBaritoneProcess
 import net.ccbluex.liquidbounce.config.types.list.Tagged
+import net.ccbluex.liquidbounce.event.events.NotificationEvent
 import net.ccbluex.liquidbounce.features.module.ClientModule
+import net.ccbluex.liquidbounce.utils.client.mc
+import net.ccbluex.liquidbounce.utils.client.notification
 import net.ccbluex.liquidbounce.utils.collection.blockSortedSetOf
+import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
@@ -43,13 +48,39 @@ object ModuleBaritoneGoto : BaritoneJobModule("Goto") {
     private val y by int("Y", 64, -64..320)
     internal var z by int("Z", 0, -WORLD_BORDER..WORLD_BORDER)
 
+    /** Leaves the world (like the pause menu's Disconnect button) once the target is reached. */
+    private val disconnectOnArrival by boolean("DisconnectOnArrival", false)
+
+    /** The goal of the current walk, to tell arriving apart from Baritone giving up. */
+    private var goal: Goal? = null
+
     override val process: IBaritoneProcess
         get() = baritone.customGoalProcess
 
     override fun start(): Boolean {
         val goal = if (useY) GoalBlock(x, y, z) else GoalXZ(x, z)
+        this.goal = goal
         baritone.customGoalProcess.setGoalAndPath(goal)
         return true
+    }
+
+    override fun onFinished() {
+        if (!disconnectOnArrival) {
+            return
+        }
+
+        val goal = goal ?: return
+        if (!goal.isInGoal(player.blockPosition())) {
+            notification(name, "Did not reach the target, staying connected", NotificationEvent.Severity.INFO)
+            return
+        }
+
+        // Leave after this tick has finished, not in the middle of it
+        mc.execute {
+            if (mc.level != null) {
+                mc.disconnectFromWorld(ClientLevel.DEFAULT_QUIT_MESSAGE)
+            }
+        }
     }
 
     /**

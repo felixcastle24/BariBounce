@@ -176,8 +176,15 @@ abstract class BaritoneJobModule(name: String) : ClientModule(
         if (!process.isActive) {
             notification(name, "Finished", NotificationEvent.Severity.SUCCESS)
             enabled = false
+            onFinished()
         }
     }
+
+    /**
+     * Called after Baritone stopped the job by itself and the module has turned off: either the job
+     * is done, or Baritone gave up on it.
+     */
+    protected open fun onFinished() {}
 
     private companion object {
         const val STARTUP_TICKS = 20
