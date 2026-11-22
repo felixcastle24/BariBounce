@@ -223,13 +223,15 @@
     transform: translateX(-50%);
     background-color: var(--clickgui-search-background-color);
     width: 600px;
-    border-radius: 30px;
+    border-radius: var(--clickgui-radius-pill);
+    border: 1px solid var(--clickgui-border-color);
+    backdrop-filter: blur(var(--clickgui-blur)) saturate(140%);
     overflow: hidden;
-    transition: ease border-radius 0.2s;
-    box-shadow: 0 0 10px var(--clickgui-search-shadow-color);
+    transition: border-radius var(--clickgui-duration-base) var(--clickgui-ease), border-color var(--clickgui-duration-base) var(--clickgui-ease);
+    box-shadow: var(--clickgui-elevation-2);
 
     &.has-results {
-      border-radius: 10px;
+      border-radius: var(--clickgui-radius-lg);
     }
 
     &:focus-within,
@@ -239,7 +241,7 @@
   }
 
   .results {
-    border-top: solid 2px var(--clickgui-search-border-color);
+    border-top: 1px solid var(--clickgui-search-border-color);
     padding: 5px 25px;
     max-height: 250px;
     overflow: auto;
@@ -247,7 +249,7 @@
     .result {
       font-size: 16px;
       padding: 10px 0;
-      transition: ease padding-left 0.2s;
+      transition: padding-left var(--clickgui-duration-base) var(--clickgui-ease);
       cursor: pointer;
       display: grid;
       grid-template-columns: max-content 1fr max-content;

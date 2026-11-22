@@ -141,27 +141,42 @@
 <style lang="scss">
   .module {
     position: relative;
+    padding: 1px var(--clickgui-space-2);
 
     .name {
       cursor: pointer;
-      transition: ease background-color 0.12s,
-      ease color 0.12s;
+      transition: background-color var(--clickgui-duration-fast) var(--clickgui-ease),
+      color var(--clickgui-duration-fast) var(--clickgui-ease);
 
       color: var(--clickgui-text-dimmed-color);
-      text-align: center;
-      font-size: 12px;
+      text-align: left;
+      font-size: var(--clickgui-font-size-md);
       font-weight: 500;
       position: relative;
-      padding: 10px;
+      padding: 9px 40px 9px var(--clickgui-space-3);
+      border-radius: var(--clickgui-radius-sm);
+
+      /* Enabled indicator bar */
+      &::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 3px;
+        height: 0;
+        border-radius: var(--clickgui-radius-pill);
+        background-color: var(--clickgui-module-enabled-indicator-color);
+        transform: translateY(-50%);
+        transition: height var(--clickgui-duration-base) var(--clickgui-ease);
+      }
 
       &.highlight::before {
         content: "";
         position: absolute;
-        top: 0;
-        left: 0;
-        width: calc(100% - 4px);
-        height: calc(100% - 4px);
-        border: solid 2px var(--clickgui-module-highlight-color);
+        inset: 0;
+        border-radius: var(--clickgui-radius-sm);
+        box-shadow: 0 0 0 2px var(--clickgui-module-highlight-color) inset;
+        pointer-events: none;
       }
 
       &:hover {
@@ -171,13 +186,21 @@
 
       &.enabled {
         color: var(--clickgui-module-enabled-color);
+        background-color: var(--clickgui-module-enabled-background-color);
+
+        &::after {
+          height: 16px;
+        }
       }
     }
 
     .settings {
+      margin: var(--clickgui-space-1) 0 var(--clickgui-space-2);
       background-color: var(--clickgui-module-settings-background-color);
-      border-left: solid 4px var(--clickgui-module-settings-border-color);
-      padding: 0 11px 0 7px;
+      border: 1px solid var(--clickgui-border-color);
+      border-left: 2px solid var(--clickgui-module-settings-border-color);
+      border-radius: var(--clickgui-radius-sm);
+      padding: var(--clickgui-space-1) var(--clickgui-space-3) var(--clickgui-space-1) var(--clickgui-space-2);
     }
 
     .expand-arrow {
@@ -185,7 +208,7 @@
       position: absolute;
       top: 0;
       right: 0;
-      width: 40px;
+      width: 36px;
       height: 100%;
       display: flex;
       align-items: center;
@@ -194,15 +217,20 @@
     }
 
     .expand-arrow-icon {
-      width: 11px;
-      height: 11px;
+      width: 10px;
+      height: 10px;
       display: block;
       background-image: url("/img/clickgui/icon-settings-expand.svg");
       background-position: center;
       background-repeat: no-repeat;
-      opacity: 0.5;
+      opacity: 0.4;
       transform: rotate(-90deg);
-      transition: ease opacity 0.15s, cubic-bezier(0.23, 1, 0.32, 1) transform 0.2s;
+      transition: opacity var(--clickgui-duration-fast) var(--clickgui-ease),
+      transform var(--clickgui-duration-base) var(--clickgui-ease);
+    }
+
+    .name:hover .expand-arrow-icon {
+      opacity: 0.8;
     }
 
     &.expanded .expand-arrow-icon {

@@ -245,13 +245,14 @@
 </div>
 
 <style lang="scss">
-
   .panel {
-    border-radius: 5px;
+    border-radius: var(--clickgui-radius-lg);
     width: 250px;
     position: absolute;
     overflow: hidden;
-    box-shadow: 0 0 10px var(--clickgui-panel-shadow-color);
+    border: 1px solid var(--clickgui-border-color);
+    box-shadow: var(--clickgui-elevation-1);
+    backdrop-filter: blur(var(--clickgui-blur)) saturate(140%);
     will-change: transform;
     transition: none;
     user-select: none;
@@ -261,21 +262,33 @@
     display: grid;
     grid-template-columns: max-content 1fr max-content;
     align-items: center;
-    column-gap: 12px;
+    column-gap: var(--clickgui-space-3);
     background-color: var(--clickgui-panel-header-background-color);
-    border-bottom: solid 2px var(--clickgui-panel-header-border-color);
-    padding: 10px 15px;
+    border-bottom: 1px solid var(--clickgui-panel-header-border-color);
+    padding: var(--clickgui-space-3) var(--clickgui-space-4);
     cursor: grab;
 
+    &:active {
+      cursor: grabbing;
+    }
+
+    > .icon {
+      width: 16px;
+      height: 16px;
+      opacity: 0.9;
+    }
+
     .category {
-      font-size: 14px;
+      font-size: var(--clickgui-font-size-sm);
       color: var(--clickgui-text-color);
-      font-weight: 500;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
     }
   }
 
   .modules {
-    transition: max-height 180ms cubic-bezier(0.23, 1, 0.32, 1);
+    transition: max-height var(--clickgui-duration-base) var(--clickgui-ease);
     scroll-behavior: smooth;
     max-height: 0;
     overflow-y: auto;
@@ -284,60 +297,47 @@
 
     &.expanded {
       max-height: 545px;
+      padding: var(--clickgui-space-1) 0;
     }
 
     &::-webkit-scrollbar {
-      width: 2px;
-      height: 2px;
+      width: 3px;
+      height: 3px;
     }
 
     &::-webkit-scrollbar-thumb {
-      border-radius: 2px;
+      border-radius: var(--clickgui-radius-pill);
+      background-color: var(--clickgui-border-strong-color);
     }
   }
 
   .expand-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
     background-color: transparent;
     border: none;
+    border-radius: var(--clickgui-radius-sm);
     cursor: pointer;
+    transition: background-color var(--clickgui-duration-fast) var(--clickgui-ease);
 
+    &:hover {
+      background-color: var(--clickgui-hover-overlay-color);
+    }
+
+    /* Chevron: points right when collapsed, down when expanded */
     .icon {
-      height: 12px;
-      width: 12px;
-      position: relative;
-
-      &::before {
-        content: "";
-        position: absolute;
-        background-color: var(--clickgui-panel-toggle-icon-color);
-        transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1);
-        top: 0;
-        left: 50%;
-        width: 2px;
-        height: 100%;
-        margin-left: -1px;
-      }
-
-      &::after {
-        content: "";
-        position: absolute;
-        background-color: var(--clickgui-panel-toggle-icon-color);
-        transition: transform 0.2s cubic-bezier(0.23, 1, 0.32, 1);
-        top: 50%;
-        left: 0;
-        width: 100%;
-        height: 2px;
-        margin-top: -1px;
-      }
+      width: 7px;
+      height: 7px;
+      border-right: 2px solid var(--clickgui-panel-toggle-icon-color);
+      border-bottom: 2px solid var(--clickgui-panel-toggle-icon-color);
+      transform: translateX(-1px) rotate(-45deg);
+      transition: transform var(--clickgui-duration-base) var(--clickgui-ease);
 
       &.expanded {
-        &::before {
-          transform: rotate(90deg);
-        }
-
-        &::after {
-          transform: rotate(180deg);
-        }
+        transform: translateY(-2px) rotate(45deg);
       }
     }
   }

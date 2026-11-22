@@ -17,7 +17,6 @@
 </label>
 
 <style lang="scss">
-
   .switch-container {
     display: flex;
     align-items: center;
@@ -27,8 +26,8 @@
   .name {
     font-weight: 500;
     color: var(--clickgui-text-color);
-    font-size: 12px;
-    margin-left: 7px;
+    font-size: var(--clickgui-font-size-sm);
+    margin-left: var(--clickgui-space-2);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -36,32 +35,31 @@
 
   .slider {
     position: absolute;
-    top: 2px;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background-color: var(--clickgui-switch-track-color);
-    transition: 0.15s cubic-bezier(0.23, 1, 0.32, 1);
-    height: 8px;
-    border-radius: 4px;
+    transition: background-color var(--clickgui-duration-base) var(--clickgui-ease);
+    border-radius: var(--clickgui-radius-pill);
 
     &::before {
       position: absolute;
       content: "";
-      height: 12px;
-      width: 12px;
-      top: -2px;
-      left: 0;
+      height: 10px;
+      width: 10px;
+      top: 2px;
+      left: 2px;
       background-color: var(--clickgui-switch-thumb-color);
-      transition: 0.15s cubic-bezier(0.23, 1, 0.32, 1);
+      box-shadow: 0 1px 2px color-mix(in srgb, black 40%, transparent);
+      transition: transform var(--clickgui-duration-base) var(--clickgui-ease),
+      background-color var(--clickgui-duration-base) var(--clickgui-ease);
       border-radius: 50%;
     }
   }
 
   .switch {
     position: relative;
-    width: 22px;
-    height: 12px;
+    flex-shrink: 0;
+    width: 24px;
+    height: 14px;
 
     input {
       display: none;

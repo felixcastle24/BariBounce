@@ -37,30 +37,33 @@
 </div>
 
 <style lang="scss">
-
   .available-tabs {
     position: fixed;
     top: 15px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 5px;
-    padding: 6px;
-    border-radius: 999px;
+    gap: var(--clickgui-space-1);
+    padding: var(--clickgui-space-1);
+    border-radius: var(--clickgui-radius-pill);
     background-color: var(--clickgui-tabs-background-color);
-    box-shadow: 0 0 10px var(--clickgui-tabs-shadow-color);
+    border: 1px solid var(--clickgui-border-color);
+    box-shadow: var(--clickgui-elevation-1);
+    backdrop-filter: blur(var(--clickgui-blur)) saturate(140%);
     z-index: 9999999999;
   }
 
   .tab-button {
     background: transparent;
     color: var(--clickgui-text-dimmed-color);
-    padding: 6px 14px;
-    font-size: 14px;
+    padding: 6px 16px;
+    font-family: "Inter", sans-serif;
+    font-size: var(--clickgui-font-size-md);
     font-weight: 600;
-    border-radius: 999px;
+    border-radius: var(--clickgui-radius-pill);
     cursor: pointer;
-    transition: ease background-color 0.2s, ease color 0.2s;
+    transition: background-color var(--clickgui-duration-base) var(--clickgui-ease),
+    color var(--clickgui-duration-base) var(--clickgui-ease);
     border: solid 1px transparent;
 
     &:hover {
@@ -69,9 +72,9 @@
     }
 
     &.active {
-      color: var(--clickgui-text-color);
+      color: #ffffff;
       background-color: var(--clickgui-tab-active-background-color);
-      border: 1px solid var(--clickgui-tab-active-border-color);
+      border-color: var(--clickgui-tab-active-border-color);
     }
   }
 </style>
