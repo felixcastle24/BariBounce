@@ -38,10 +38,10 @@ private const val WORLD_BORDER = 30_000_000
  */
 object ModuleBaritoneGoto : BaritoneJobModule("Goto") {
 
-    private val x by int("X", 0, -WORLD_BORDER..WORLD_BORDER)
-    private val useY by boolean("UseY", false)
+    internal var x by int("X", 0, -WORLD_BORDER..WORLD_BORDER)
+    internal var useY by boolean("UseY", false)
     private val y by int("Y", 64, -64..320)
-    private val z by int("Z", 0, -WORLD_BORDER..WORLD_BORDER)
+    internal var z by int("Z", 0, -WORLD_BORDER..WORLD_BORDER)
 
     override val process: IBaritoneProcess
         get() = baritone.customGoalProcess
@@ -50,6 +50,21 @@ object ModuleBaritoneGoto : BaritoneJobModule("Goto") {
         val goal = if (useY) GoalBlock(x, y, z) else GoalXZ(x, z)
         baritone.customGoalProcess.setGoalAndPath(goal)
         return true
+    }
+
+    /**
+     * Walks to [targetX], [targetZ] at any height, as picked on the ClickGUI map.
+     * A walk already under way is replaced.
+     */
+    fun walkTo(targetX: Int, targetZ: Int) {
+        x = targetX
+        z = targetZ
+        useY = false
+
+        if (enabled) {
+            enabled = false
+        }
+        enabled = true
     }
 }
 

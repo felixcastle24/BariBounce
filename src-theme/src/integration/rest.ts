@@ -956,3 +956,38 @@ export async function saveLocalConfig(name: string, overwrite: boolean): Promise
 export async function browseLocalConfigs(): Promise<void> {
     await fetch(`${API_BASE}/client/localConfigs/browse`, {method: "POST"});
 }
+
+export interface MapData {
+    /** World coordinates of the image's top-left pixel; one pixel is one block */
+    originX: number;
+    originZ: number;
+    size: number;
+    playerX: number;
+    playerZ: number;
+    playerYaw: number;
+    /** Whether Baritone is installed, so a target can be walked to */
+    baritone: boolean;
+    goal: { x: number; z: number; active: boolean } | null;
+    /** PNG data URL */
+    image: string;
+}
+
+export async function getMap(radius?: number): Promise<MapData> {
+    const query = radius ? `?radius=${radius}` : "";
+    const response = await fetch(`${API_BASE}/client/map${query}`);
+    if (!response.ok) {
+        throw new Error("The map is only available in a world");
+    }
+    return await response.json();
+}
+
+export async function baritoneGoto(x: number, z: number): Promise<void> {
+    const response = await fetch(`${API_BASE}/client/baritone/goto`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({x, z})
+    });
+    if (!response.ok) {
+        throw new Error("Could not start Baritone");
+    }
+}

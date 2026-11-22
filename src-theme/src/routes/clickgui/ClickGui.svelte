@@ -13,6 +13,7 @@
     import ModuleCard from "./window/ModuleCard.svelte";
     import ModuleSettingsPane from "./window/ModuleSettingsPane.svelte";
     import ConfigSwitcher from "./window/ConfigSwitcher.svelte";
+    import MapPicker from "./window/MapPicker.svelte";
     import LiquidBounceLogo from "../../components/LiquidBounceLogo.svelte";
 
     type Filter = "all" | "enabled" | "disabled";
@@ -39,6 +40,7 @@
     let filter = $state<Filter>("all");
     let query = $state("");
     let openModuleName = $state<string | null>(null);
+    let mapOpen = $state(false);
     let restored = false;
 
     const counts = $derived(Object.fromEntries(
@@ -86,7 +88,9 @@
     );
 
     const layer = escapeLayer(() => {
-        if (openModuleName) {
+        if (mapOpen) {
+            mapOpen = false;
+        } else if (openModuleName) {
             openModuleName = null;
         } else {
             query = "";
@@ -94,7 +98,7 @@
     });
 
     $effect(() => {
-        layer.setOpen(!!openModuleName || searching);
+        layer.setOpen(mapOpen || !!openModuleName || searching);
     });
 
     $effect(() => {
@@ -116,6 +120,7 @@
         active = target;
         query = "";
         openModuleName = null;
+        mapOpen = false;
     }
 
     function openSettings(name: string) {
@@ -251,6 +256,14 @@
                             {/if}
                         </div>
 
+                        {#if active === "Baritone" && !searching}
+                            <button class="map-button" onclick={() => (mapOpen = true)}>
+                                <svg viewBox="0 0 16 16" aria-hidden="true">
+                                    <path d="M1.5 3.5l4-1.5 5 2 4-1.5v10l-4 1.5-5-2-4 1.5z M5.5 2v10 M10.5 4v10"/>
+                                </svg>
+                                Map
+                            </button>
+                        {/if}
                         <label class="search">
                             <svg viewBox="0 0 24 24" aria-hidden="true">
                                 <circle cx="11" cy="11" r="7"/>
@@ -333,8 +346,16 @@
 
                 {#if openModule}
                     {#key openModule.name}
-                        <ModuleSettingsPane module={openModule} onClose={() => (openModuleName = null)}/>
+                        <ModuleSettingsPane
+                                module={openModule}
+                                onClose={() => (openModuleName = null)}
+                                onOpenMap={openModule.name === "Goto" ? () => { openModuleName = null; mapOpen = true; } : undefined}
+                        />
                     {/key}
+                {/if}
+
+                {#if mapOpen}
+                    <MapPicker onClose={() => (mapOpen = false)}/>
                 {/if}
             </main>
         </div>
@@ -580,6 +601,34 @@
         color: var(--clickgui-text-dimmed-color);
         opacity: 0.75;
       }
+    }
+  }
+
+  .map-button {
+    all: unset;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: var(--clickgui-font-size-sm);
+    font-weight: 600;
+    color: #ffffff;
+    background-color: var(--accent-color);
+    cursor: pointer;
+    transition: background-color var(--clickgui-duration-fast) var(--clickgui-ease);
+
+    &:hover {
+      background-color: var(--accent-hover-color);
+    }
+
+    svg {
+      width: 14px;
+      height: 14px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.4;
+      stroke-linejoin: round;
     }
   }
 

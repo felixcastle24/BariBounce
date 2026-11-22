@@ -5,9 +5,11 @@
     import GenericSetting from "../setting/common/GenericSetting.svelte";
     import {convertToSpacedString, spaceSeperatedNames} from "../../../theme/theme_config";
 
-    let {module, onClose}: {
+    let {module, onClose, onOpenMap}: {
         module: Module;
         onClose: () => void;
+        /** Shown as a "Pick target on map" button when set */
+        onOpenMap?: () => void;
     } = $props();
 
     let configurable = $state<ConfigurableSetting | null>(null);
@@ -55,6 +57,10 @@
         <span class="dot"></span>
         {module.enabled ? "Enabled" : "Disabled"}
     </button>
+
+    {#if onOpenMap}
+        <button class="map" onclick={onOpenMap}>Pick target on map</button>
+    {/if}
 
     <div class="settings">
         {#if configurable}
@@ -169,6 +175,23 @@
       .dot {
         background-color: var(--accent-color);
       }
+    }
+  }
+
+  .map {
+    all: unset;
+    margin: var(--clickgui-space-3) var(--clickgui-space-4) 0;
+    padding: 8px 12px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: var(--clickgui-font-size-xs);
+    font-weight: 600;
+    color: #ffffff;
+    background-color: var(--accent-color);
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--accent-hover-color);
     }
   }
 

@@ -27,6 +27,7 @@ import net.ccbluex.liquidbounce.integration.interop.protocol.rest.v1.client.comp
 import net.ccbluex.liquidbounce.integration.interop.protocol.rest.v1.client.globalRoutes
 import net.ccbluex.liquidbounce.integration.interop.protocol.rest.v1.client.localConfigRoutes
 import net.ccbluex.liquidbounce.integration.interop.protocol.rest.v1.client.localStorageRoutes
+import net.ccbluex.liquidbounce.integration.interop.protocol.rest.v1.client.mapRoutes
 import net.ccbluex.liquidbounce.integration.interop.protocol.rest.v1.client.marketplaceConfigRoutes
 import net.ccbluex.liquidbounce.integration.interop.protocol.rest.v1.client.marketplaceItemRoutes
 import net.ccbluex.liquidbounce.integration.interop.protocol.rest.v1.client.marketplaceRoutes
@@ -53,6 +54,7 @@ internal fun Route.registerInteropFunctions() = route("/api/v1/client") {
     userRoutes()
     localStorageRoutes()
     localConfigRoutes()
+    mapRoutes()
     themeRoutes()
     screenRoutes()
     moduleRoutes()
